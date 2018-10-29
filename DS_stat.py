@@ -1,10 +1,12 @@
 import pandas as pd
 import numpy as np
 
+from usfull_tools import numeric_types
+numeric_types = numeric_types()
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set(style="whitegrid")
-plt.subplots(figsize=(18, 8))
 
 def DS_stat(DS_nan, target_column, role):
     categorical_max_size = 20  # if less then determinate as categorical
@@ -22,7 +24,7 @@ def DS_stat(DS_nan, target_column, role):
         print('Most frequent: ', DS[column].value_counts().idxmax(), ' - ', 
               DS[column].value_counts().max(), ' (', np.round(DS[column].value_counts().max() / rows * 100, 2),'%)')
         
-        if (DS[column].dtypes == 'int64') | (DS[column].dtypes == 'int32') | (DS[column].dtypes == 'int16') | (DS[column].dtypes == 'int8') | (DS[column].dtypes == 'float64') | (DS[column].dtypes == 'float32') | (DS[column].dtypes == 'float16'):            
+        if (DS[column].dtypes in numeric_types):            
             print('Unique values:', DS[column].nunique())
             print('Min / Max:', DS[column].min(), ' / ', DS[column].max())
 
@@ -44,5 +46,10 @@ def DS_stat(DS_nan, target_column, role):
         if DS[column].dtypes == 'object':
             print('Unique values of:', DS[column].nunique(), ' (', np.round((DS[column].nunique()/DS[column].count())*100,2),'%)')
             if DS[column].nunique() < categorical_max_size:
-                sns.boxplot(x = target_column, y = column, data=DS)
-                plt.show()
+                print(DS[column].value_counts())
+                if DS[target_column].nunique() == 2:
+                    sns.barplot(x = column, y = target_column, data=DS)
+                    plt.show()
+                else:
+                    sns.boxplot(x = target_column, y = column, data=DS)
+                    plt.show()
