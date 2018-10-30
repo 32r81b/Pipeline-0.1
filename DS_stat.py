@@ -12,6 +12,7 @@ def DS_stat(DS_nan, target_column, role):
     categorical_max_size = 20  # if less then determinate as categorical
     
     rows_nan, cols_nan = DS_nan.shape
+    skew = DS_nan.skew()
     print('Shape:', rows_nan, ' * ', cols_nan)
     print('First 5 rows from ', role, ':')
     display(DS_nan.head())
@@ -27,6 +28,7 @@ def DS_stat(DS_nan, target_column, role):
         if (DS[column].dtypes in numeric_types):            
             print('Unique values:', DS[column].nunique())
             print('Min / Max:', DS[column].min(), ' / ', DS[column].max())
+            if skew[column]>3: print('Scew:', np.round(skew[column], 2))
 
             
             if DS[column].nunique() > categorical_max_size:
@@ -34,8 +36,7 @@ def DS_stat(DS_nan, target_column, role):
 
             sns.distplot(DS[column], kde=False)
             plt.show()
-
-            #!check correct work on many Nan column
+            
             not_null_counter = DS[column].count()
             sort = DS[column].sort_values()
             sort = sort[int(not_null_counter*0.05):int(not_null_counter*0.95)]
