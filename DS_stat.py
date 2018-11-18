@@ -9,13 +9,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set(style="whitegrid")
 
-def DS_stat(DS_nan, target_column, role):
+def DS_stat(DS_nan, target_column):
     categorical_max_size = 20  # if less then determinate as categorical
     
     rows_nan, cols_nan = DS_nan.shape
     skew = DS_nan.skew()
     print('Shape:', rows_nan, ' * ', cols_nan)
-    print('First 5 rows from ', role, ':')
+    print('First 5 rows:')
     display(DS_nan.head())
   
     for column in DS_nan.columns:

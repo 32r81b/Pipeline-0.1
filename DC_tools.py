@@ -22,7 +22,7 @@ def DS_reaplce_nan(train, test, target_column):
             DS.drop(column, axis=1, inplace = True)
         #2. Search columns with Nan
         elif DS[column].isna().sum() > 0:
-            DS[column + '_nan'] = DS[column]
+            DS[column + '_nan'] = DS[column].fillna('NAN')
             
             # 2.1 if NA < 50% rows, median for numeric, most frequent for object            
             if DS[column].isna().sum()/rows < 0.5:

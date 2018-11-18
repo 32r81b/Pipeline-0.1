@@ -2,15 +2,15 @@ import numpy as np
 import pandas as pd
 
 
-def load_DS(debug_mode, KAGGLE_DIR, KAGGLE_PREFIX):
+def load_DS(debug_mode, KAGGLE_DIR, KAGGLE_PREFIX, LOCAL_PREFIX='.csv'):
     if debug_mode == True:
-        train = pd.read_csv(KAGGLE_DIR + 'train' + KAGGLE_PREFIX + '.csv', nrows=100000)
-        test = pd.read_csv(KAGGLE_DIR + 'test' + KAGGLE_PREFIX + '.csv', nrows=100000)
+        train = pd.read_csv(KAGGLE_DIR + 'train' + KAGGLE_PREFIX + LOCAL_PREFIX, nrows=100000)
+        test = pd.read_csv(KAGGLE_DIR + 'test' + KAGGLE_PREFIX + LOCAL_PREFIX, nrows=100000)
     else:
-        train = pd.read_csv(KAGGLE_DIR + 'train' + KAGGLE_PREFIX + '.csv')
-        test = pd.read_csv(KAGGLE_DIR + 'test' + KAGGLE_PREFIX + '.csv')
+        train = pd.read_csv(KAGGLE_DIR + 'train' + KAGGLE_PREFIX + LOCAL_PREFIX)
+        test = pd.read_csv(KAGGLE_DIR + 'test' + KAGGLE_PREFIX + LOCAL_PREFIX)
 
-    return  reduce_mem_usage(train), test = reduce_mem_usage(test)
+    return  reduce_mem_usage(train), reduce_mem_usage(test)
 
 
 def numeric_types():
