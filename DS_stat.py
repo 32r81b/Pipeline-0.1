@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import scipy.stats as st
 
 from usfull_tools import numeric_types
 numeric_types = numeric_types()
@@ -24,6 +25,13 @@ def DS_stat(DS_nan, target_column, role):
         rows, cols = DS.shape
         print('Most frequent: ', DS[column].value_counts().idxmax(), ' - ', 
               DS[column].value_counts().max(), ' (', np.round(DS[column].value_counts().max() / rows * 100, 2),'%)')
+#         !perform correaltion tets
+#         if (column != target_column):
+#             print(DS[column].dtype)
+#             chi2, p, dof, expected = st.chi2_contingency(DS[[column, target_column]].values)
+#             print('chi2: ', np.round(chi2,2))
+#             print('p:', np.round(p,3))
+#             print('dof:', np.round(dof,2))
         
         if (DS[column].dtypes in numeric_types):            
             print('Unique values:', DS[column].nunique())
