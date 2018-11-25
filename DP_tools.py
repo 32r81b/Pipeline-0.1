@@ -12,7 +12,7 @@ def DS_numerical_feature_generator(train, test, target_column):
     column_types = column_types[column_types != 'object']
     numeric_columns = column_types.index.tolist()
     numeric_columns.remove(target_column)
-    print(numeric_columns)
+    print('Numerical columns: ', numeric_columns)
 
     for i in range(len(numeric_columns)):
         for m in range(i+1, len(numeric_columns)):
