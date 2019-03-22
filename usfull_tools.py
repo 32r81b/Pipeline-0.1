@@ -4,8 +4,8 @@ import pandas as pd
 
 def load_DS(debug_mode, KAGGLE_DIR, KAGGLE_PREFIX, LOCAL_PREFIX='.csv'):
     if debug_mode == True:
-        train = pd.read_csv(KAGGLE_DIR + 'train' + KAGGLE_PREFIX + LOCAL_PREFIX, nrows=100000)
-        test = pd.read_csv(KAGGLE_DIR + 'test' + KAGGLE_PREFIX + LOCAL_PREFIX, nrows=100000)
+        train = pd.read_csv(KAGGLE_DIR + 'train' + KAGGLE_PREFIX + LOCAL_PREFIX, nrows=10000)
+        test = pd.read_csv(KAGGLE_DIR + 'test' + KAGGLE_PREFIX + LOCAL_PREFIX, nrows=10000)
     else:
         train = pd.read_csv(KAGGLE_DIR + 'train' + KAGGLE_PREFIX + LOCAL_PREFIX)
         test = pd.read_csv(KAGGLE_DIR + 'test' + KAGGLE_PREFIX + LOCAL_PREFIX)
@@ -15,6 +15,15 @@ def load_DS(debug_mode, KAGGLE_DIR, KAGGLE_PREFIX, LOCAL_PREFIX='.csv'):
 
 def numeric_types():
     return ['int64','int32','int16','int8','float64','float32','float16']
+
+def numeric_fraction_types():
+    return ['float64','float32','float16']
+
+def numeric_nonfraction_types():
+    return ['int64','int32','int16','int8']
+
+
+
 
 def reduce_mem_usage(df):
     start_mem = df.memory_usage().sum() / 1024**2

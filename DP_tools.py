@@ -12,7 +12,7 @@ def DS_numerical_feature_generator(train, test, target_column):
     column_types = column_types[column_types != 'object']
     numeric_columns = column_types.index.tolist()
     numeric_columns.remove(target_column)
-    print('Numerical columns: ', numeric_columns)
+    print('Numerical columns: ', len(numeric_columns))
 
     for i in range(len(numeric_columns)):
         for m in range(i+1, len(numeric_columns)):
@@ -36,7 +36,7 @@ def DS_dummies(train, test, target_column):
         if DS[column].dtype == object and DS[column].nunique() < 20:
             dummies = pd.get_dummies(DS[column], prefix = str(column + '_dummie'))
             DS = pd.concat([DS, dummies], axis=1)
-            print('Create dummies for ', column, ': ', dummies.columns.values)
+            print('Create dummies for', column, ':', len(dummies.columns))
             
     train = DS[DS[target_column].notnull()]
     test = DS[DS[target_column].isnull()]

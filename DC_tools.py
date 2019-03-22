@@ -1,17 +1,15 @@
 import pandas as pd
 import numpy as np
 
-from usfull_tools import numeric_types
+from usfull_tools import numeric_types, numeric_fraction_types, numeric_nonfraction_types
 numeric_types = numeric_types()
+numeric_nonfraction_types = numeric_nonfraction_types()
+numeric_fraction_types = numeric_fraction_types()
 
-# 1. Remove global ID column
-# 2. Search columns with Nan
-# 2.1 if NA < 50% rows:
-#     - median for numeric
-#     - most frequent for object  
-# 2.2 if NA > 50% replace as _isnull column
 def DS_reaplce_nan(train, test, target_column):   
     DS = train.append(test, sort = False)
+    
+  
     rows, cells = DS.shape
     
     #Search Nan in all columns except target
@@ -22,22 +20,30 @@ def DS_reaplce_nan(train, test, target_column):
             DS.drop(column, axis=1, inplace = True)
         #2. Search columns with Nan
         elif DS[column].isna().sum() > 0:
-            DS[column + '_nan'] = DS[column].fillna('NAN')
-            
-            # 2.1 if NA < 50% rows, median for numeric, most frequent for object            
+            # 2.1 if NA < 50% rows
             if DS[column].isna().sum()/rows < 0.5:
-                if DS[column].dtype in numeric_types:
-                    print(column, np.round(DS[column].isna().sum()/rows*100), '% NAN replaced by:')
-                    print ('median = ', DS[column].median())
-                    DS[column + '_nan_median'] = DS[column].fillna(DS[column].median())
-                    print ('min = ', DS[column].min())
+                #/min/max/0/most_frequent for non fraction numeric            
+                if DS[column].dtype in numeric_nonfraction_types:
                     DS[column + '_nan_min'] = DS[column].fillna(DS[column].min())
-                    print ('max = ', DS[column].max())
                     DS[column + '_nan_max'] = DS[column].fillna(DS[column].max())
-                    print ('by zero')
                     DS[column + '_nan_0'] = DS[column].fillna(0)
+                    DS[column + '_idxmax'] = DS[column].fillna(DS[column].value_counts().idxmax())
+                    print (DS[column].dtype, column, np.round(DS[column].isna().sum()/rows*100), '% NAN replaced by: ', 
+                           'idxmax = ', DS[column].fillna(DS[column].value_counts().idxmax()), ' / min = ', DS[column].min(), 
+                           ' / max = ', DS[column].max(), ' / by zero')
+                    
+                #median/min/max/0 for fraction numeric            
+                if DS[column].dtype in numeric_fraction_types:
+                    DS[column + '_nan_median'] = DS[column].fillna(DS[column].median())
+                    DS[column + '_nan_min'] = DS[column].fillna(DS[column].min())
+                    DS[column + '_nan_max'] = DS[column].fillna(DS[column].max())
+                    DS[column + '_nan_0'] = DS[column].fillna(0)
+                    print (DS[column].dtype, column, np.round(DS[column].isna().sum()/rows*100), '% NAN replaced by: ', 'median = ', DS[column].median(), 
+                           ' / min = ', DS[column].min(), ' / max = ', DS[column].max(), ' / by zero')
+
+                #most frequent for object
                 if DS[column].dtype == object:
-                    print(column, ': NAN ', np.round(DS[column].isna().sum()/rows*100), '%', ' replaced ', DS[column].value_counts().idxmax())
+                    print(DS[column].dtype, column,': NAN ',np.round(DS[column].isna().sum()/rows*100),'%',' replaced ', DS[column].value_counts().idxmax())
                     DS[column + '_idxmax'] = DS[column].fillna(DS[column].value_counts().idxmax())
 
             # 2.2 if NA > 50% replace as _isnull column
