@@ -5,8 +5,8 @@ KAGGLE_PREFIX = ''
 
 
 
-#KAGGLE_DIR = 'C:/Users/Ruslan/Documents/GitHub/Pipeline-0.1/input_titanic/'; target_column = 'Survived';
-#id_column= 'PassengerId'; target_type='binary'; forced_dtype = dict[];loss_function='CrossEntropy';custom_metric='Accuracy';
+# KAGGLE_DIR = 'C:/Users/Ruslan/Documents/GitHub/Pipeline-0.1/input_titanic/'; target_column = 'Survived';
+# id_column= 'PassengerId'; target_type='binary'; forced_dtype = {};loss_function='CrossEntropy';custom_metric='Accuracy';
 
 
 KAGGLE_DIR = 'C:/Users/Ruslan/Documents/GitHub/Pipeline-0.1/input_house/';target_column ='SalePrice';id_column= 'Id';target_type='interval';

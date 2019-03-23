@@ -24,22 +24,74 @@ def DS_reaplce_nan(train, test, target_column):
             if DS[column].isna().sum()/rows < 0.5:
                 #/min/max/0/most_frequent for non fraction numeric            
                 if DS[column].dtype in numeric_nonfraction_types:
-                    DS[column + '_nan_min'] = DS[column].fillna(DS[column].min())
-                    DS[column + '_nan_max'] = DS[column].fillna(DS[column].max())
-                    DS[column + '_nan_0'] = DS[column].fillna(0)
-                    DS[column + '_idxmax'] = DS[column].fillna(DS[column].value_counts().idxmax())
-                    print (DS[column].dtype, column, np.round(DS[column].isna().sum()/rows*100), '% NAN replaced by: ', 
-                           'idxmax = ', DS[column].fillna(DS[column].value_counts().idxmax()), ' / min = ', DS[column].min(), 
-                           ' / max = ', DS[column].max(), ' / by zero')
+# TO DO: протестировать INT. Или NAN с INT уже не получишь?
+
+                    print('-----' ,column ,'------')
+                    nan_min = DS[column].fillna(DS[column].min())
+                    nan_max = DS[column].fillna(DS[column].max())
+                    nan_0 = DS[column].fillna(0)
+                    nan_idxmax = DS[column].fillna(DS[column].value_counts().idxmax())
+                    print('nan_min corr:', DS[target_column].corr(nan_min))
+                    print('nan_max corr:', DS[target_column].corr(nan_max))
+                    print('nan_0 corr:', DS[target_column].corr(nan_0))
+                    print('nan_idxmax corr:', DS[target_column].corr(nan_idxmax))
+                    
+                    nan_name = '_nan_idxmax'
+                    nan_value = DS[column].fillna(DS[column].value_counts().idxmax())
+                    nan_corr = abs(DS[column].fillna(DS[column].value_counts().idxmax()))
+                    
+                    if abs(nan_corr)<abs(DS[target_column].corr(DS[column].fillna(DS[column].min()))):
+                        nan_name = '_nan_min'
+                        nan_value = DS[column].fillna(DS[column].min())
+                        nan_corr = abs(DS[target_column].corr(nan_min))                    
+                           
+                    if abs(nan_corr)<abs(DS[target_column].corr(DS[column].fillna(DS[column].max()))):
+                        nan_name = '_nan_max'
+                        nan_value = DS[column].fillna(DS[column].max())
+                        nan_corr = abs(DS[target_column].corr(nan_max))                    
+                           
+                    if abs(nan_corr)<abs(DS[target_column].corr(DS[column].fillna(0))):
+                        nan_name = '_nan_0'
+                        nan_value = DS[column].fillna(0)
+                        nan_corr = abs(DS[target_column].corr(DS[column].fillna(0)))
+                        
+                    print(nan_name, nan_corr)
+                    DS[column + nan_name] = nan_value
+                    print (DS[column].dtype, column, np.round(DS[column].isna().sum()/rows*100), '% NAN replaced by: ', nan_name)
                     
                 #median/min/max/0 for fraction numeric            
                 if DS[column].dtype in numeric_fraction_types:
-                    DS[column + '_nan_median'] = DS[column].fillna(DS[column].median())
-                    DS[column + '_nan_min'] = DS[column].fillna(DS[column].min())
-                    DS[column + '_nan_max'] = DS[column].fillna(DS[column].max())
-                    DS[column + '_nan_0'] = DS[column].fillna(0)
-                    print (DS[column].dtype, column, np.round(DS[column].isna().sum()/rows*100), '% NAN replaced by: ', 'median = ', DS[column].median(), 
-                           ' / min = ', DS[column].min(), ' / max = ', DS[column].max(), ' / by zero')
+#                     print('-----' ,column ,'------')
+#                     nan_min = DS[column].fillna(DS[column].min())
+#                     nan_max = DS[column].fillna(DS[column].max())
+#                     nan_0 = DS[column].fillna(0)
+#                     nan_median = DS[column].fillna(DS[column].median())
+#                     print('nan_min corr:', DS[target_column].corr(nan_min))
+#                     print('nan_max corr:', DS[target_column].corr(nan_max))
+#                     print('nan_0 corr:', DS[target_column].corr(nan_0))
+#                     print('nan_median corr:', DS[target_column].corr(nan_median))
+                    
+                    nan_name = '_nan_median'
+                    nan_value = DS[column].fillna(DS[column].median())
+                    nan_corr = abs(DS[target_column].corr(DS[column].fillna(DS[column].median())))
+                    
+                    if abs(nan_corr)<abs(DS[target_column].corr(DS[column].fillna(DS[column].min()))):
+                        nan_name = '_nan_min'
+                        nan_value = DS[column].fillna(DS[column].min())
+                        nan_corr = abs(DS[target_column].corr(DS[column].fillna(DS[column].min())))                    
+                           
+                    if abs(nan_corr)<abs(DS[target_column].corr(DS[column].fillna(DS[column].max()))):
+                        nan_name = '_nan_max'
+                        nan_value = DS[column].fillna(DS[column].max())
+                        nan_corr = abs(DS[target_column].corr(DS[column].fillna(DS[column].max())))                    
+                           
+                    if abs(nan_corr)<abs(DS[target_column].corr(DS[column].fillna(0))):
+                        nan_name = '_nan_0'
+                        nan_value = DS[column].fillna(0)
+                        nan_corr = abs(DS[target_column].corr(DS[column].fillna(0)))
+                        
+                    DS[column + nan_name] = nan_value
+                    print (DS[column].dtype, column, np.round(DS[column].isna().sum()/rows*100), '% NAN replaced by: ', nan_name)
 
                 #most frequent for object
                 if DS[column].dtype == object:
