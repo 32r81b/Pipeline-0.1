@@ -44,46 +44,37 @@ def DS_reaplce_nan(train, test, target_column):
                    
                     nan_value = DS[column].median()
                     new_column_values = train[column].fillna(nan_value)
-                    acc, time = fast_score(train, new_column_values, column)
+                    acc, time = fast_score(train.copy(), new_column_values, column)
                     best_column_values = new_column_values
                     best_acc = acc
                     print('fast_score with median:', np.round(acc, 4), np.round(time), 'sec. taken')
                    
                     nan_value = DS[column].min()
                     new_column_values = train[column].fillna(nan_value)
-                    acc, time = fast_score(train, new_column_values, column)
+                    acc, time = fast_score(train.copy(), new_column_values, column)
                     
                     if (best_acc*acc_sign>acc*acc_sign):
                         best_acc=acc
                         best_column_values=new_column_values
                         print('fast_score with min   :', np.round(acc, 4), np.round(time), 'sec. taken')
-#                     else:
-#                         print('fast_score with min   :', np.round(acc, 4), np.round(time), 'sec. taken')
-
                         
                     nan_value = DS[column].max()
                     new_column_values = train[column].fillna(nan_value)
-                    acc, time = fast_score(train, new_column_values, column)
+                    acc, time = fast_score(train.copy(), new_column_values, column)
                     
                     if (best_acc*acc_sign>acc*acc_sign):
                         best_acc=acc
                         best_column_values=new_column_values
                         print('fast_score with max   :', np.round(acc, 4), np.round(time), 'sec. taken')
-#                     else:
-#                         print('fast_score with max   :', np.round(acc, 4), np.round(time), 'sec. taken')                        
-
                    
                     nan_value = 0
                     new_column_values = train[column].fillna(nan_value)
-                    acc, time = fast_score(train, new_column_values, column)
+                    acc, time = fast_score(train.copy(), new_column_values, column)
                     
                     if (best_acc*acc_sign>acc*acc_sign):
                         best_acc=acc
                         best_column_values=new_column_values
                         print('fast_score with 0     :', np.round(acc, 4), np.round(time), 'sec. taken')
-#                     else:
-#                         print('fast_score with 0     :', np.round(acc, 4), np.round(time), 'sec. taken')   
-
 
                     for cat_column in group_feature:
                         nan_tmp = []
@@ -103,14 +94,13 @@ def DS_reaplce_nan(train, test, target_column):
                                 
                         new_column_values = pd.Series((nan_tmp))
                         
-                        acc, time = fast_score(train, new_column_values, column)
+                        acc, time = fast_score(train.copy(), new_column_values, column)
                     
                         if (best_acc*acc_sign>acc*acc_sign):
                             best_acc=acc
                             best_column_values=new_column_values
                             print('fast_score with group_feature ', cat_column, ':', np.round(acc, 4), np.round(time), 'sec. taken')
-#                         else:
-#                             print('fast_score with group_feature ', cat_column, ':', np.round(acc, 4), np.round(time), 'sec. taken')   
+ 
 
                     DS[column] = best_column_values
 

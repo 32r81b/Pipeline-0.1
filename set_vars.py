@@ -1,4 +1,6 @@
 debug_mode = True
+skew_trashold = 2
+feature_generator_trashold=1.01
 
 KAGGLE_PREFIX = ''
 #KAGGLE_DIR = 'C:/Users/Acer/PycharmProjects/Pipeline-0.1/input_pubg-finish-placement-prediction/';KAGGLE_PREFIX = '_V2';target_column = 'winPlacePerc';

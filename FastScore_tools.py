@@ -15,22 +15,26 @@ numeric_types = numeric_types()
 numeric_nonfraction_types = numeric_nonfraction_types()
 numeric_fraction_types = numeric_fraction_types()
 
-def fast_score(train, new_column_values, old_column):
+def fast_score(train, new_column_values= pd.Series([]), old_column=''):
     start = time. time()
-    train_tmp = train.drop(old_column, axis=1)
-
+    if old_column != '':
+        train = train.drop(old_column, axis=1)
+        
     #Числовые NAN заменеям на median
-    for column in train_tmp.columns:
-        if train_tmp[column].isna().sum() > 0:
-            if train_tmp[column].dtype in numeric_types:
-                nan_value = train_tmp[column].median()
-                train_tmp[column] = train_tmp[column].fillna(nan_value)    
+    for column in train.columns:
+        if train[column].isna().sum() > 0:
+            if train[column].dtype in numeric_types:
+                nan_value = train[column].median()
+                train[column] = train[column].fillna(nan_value)    
     
-    train_tmp['new_column'] = new_column_values
-    y = train_tmp[target_column]
-    train_tmp.drop(target_column, axis=1, inplace=True)
+    if new_column_values.empty == False:
+        train['new_column'] = new_column_values
+
+       
+    y = train[target_column]
+    train.drop(target_column, axis=1, inplace=True)
     
-    X_train, X_test, y_train, y_test = train_test_split(train_tmp, y, test_size=0.3, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(train, y, test_size=0.3, random_state=42)
     
     if target_type=='binary':
         model = LogisticRegression(solver='liblinear')
