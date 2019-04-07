@@ -9,7 +9,7 @@ numeric_types = numeric_types()
 numeric_nonfraction_types = numeric_nonfraction_types()
 numeric_fraction_types = numeric_fraction_types()
 
-from set_vars import KAGGLE_PREFIX, KAGGLE_DIR, acc_sign
+from set_vars import KAGGLE_PREFIX, KAGGLE_DIR, acc_sign, group_feature_detection_trashold, target_oultliers_trashold, nan_trashold
 
 def DS_reaplce_nan(train, test, target_column):
     DS = train.append(test, sort = False)
@@ -23,7 +23,7 @@ def DS_reaplce_nan(train, test, target_column):
     
     for column in train.columns:
         if train[column].dtype == object:
-            if train[column].nunique() < 20:
+            if train[column].nunique() < group_feature_detection_trashold:
                 dummies = pd.get_dummies(train[column], prefix = str(column + '_dummie'))
                 train = pd.concat([train, dummies], axis=1)
             train.drop(column, axis=1, inplace=True)
@@ -32,15 +32,17 @@ def DS_reaplce_nan(train, test, target_column):
     for column in DS.columns.drop(target_column):
         # 1. Remove global ID column
         if DS[column].nunique() == rows:
-            print('\n\n--- Drop as ID column: ', column)
+            print('\n--- Drop as ID column: ', column)
             DS.drop(column, axis=1, inplace = True)
         #2. Search columns with Nan
         elif DS[column].isna().sum() > 0:
-            # 2.1 if NA < 50% rows
-            if DS[column].isna().sum()/rows < 0.5:
+            # 2.1 if NA < nan_trashold rows
+            if DS[column].isna().sum()/rows < nan_trashold:
                 #median/min/max/0 for fraction numeric            
                 if DS[column].dtype in numeric_fraction_types:
-                    print('\n\n---Searching best NAN replace for numeric_fraction:', column)
+                    print('\n---Searching best NAN replace for numeric_fraction:', column,
+                          np.round(DS[column].isna().sum()/rows*100),'%',
+                          '(', np.round(DS[column].isna().sum()), ' observations)')
                    
                     nan_value = DS[column].median()
                     new_column_values = train[column].fillna(nan_value)
@@ -100,6 +102,8 @@ def DS_reaplce_nan(train, test, target_column):
                             best_acc=acc
                             best_column_values=new_column_values
                             print('fast_score with group_feature ', cat_column, ':', np.round(acc, 4), np.round(time), 'sec. taken')
+#                         else:
+#                             print(' - fast_score with group_feature ', cat_column, ':', np.round(acc, 4), np.round(time), 'sec. taken')
  
 
                     DS[column] = best_column_values
@@ -107,15 +111,20 @@ def DS_reaplce_nan(train, test, target_column):
 
                 #most frequent for object
                 if DS[column].dtype == object:
-                    print('\n\n---', DS[column].dtype, column,': NAN ',
+                    print('\n---', DS[column].dtype, column,': NAN ',
                           np.round(DS[column].isna().sum()/rows*100),'%',
                           '(', np.round(DS[column].isna().sum()), ' observations)',
                                         ' replaced ', DS[column].value_counts().idxmax())
                     DS[column] = DS[column].fillna(DS[column].value_counts().idxmax())
 
-            # 2.2 if NA > 50% replace as _isnull column
+            # 2.2 if NA > nan_trashold % replace as _isnull column
             else:
+                print('\n---', DS[column].dtype, column,': NAN ',
+                          np.round(DS[column].isna().sum()/rows*100),'%',
+                          '(', np.round(DS[column].isna().sum()), ' observations)',
+                                        ' replaced isnull()')
                 DS[column] = DS[column].isnull()
+
 
     train = DS[DS[target_column].notnull()]
     test = DS[DS[target_column].isnull()]
@@ -137,3 +146,18 @@ def DS_reaplce_idcolumns(train, test, target_column):
     test = DS[DS[target_column].isnull()]
     
     return train, test.drop(target_column, axis=1), DS
+
+def DS_remove_target_oultliers(train, target_column):
+    rows, cells = train.shape
+    
+    if target_oultliers_trashold > 0:
+        rows_after, cells_afetr = train[train[target_column]>target_oultliers_trashold].shape
+        print('Target_oultliers_trashold set:', target_oultliers_trashold, 
+              '. Remove ', rows_after, 'rows (', np.round(rows_after/rows*100), '%).')
+        train = train[train[target_column]<=target_oultliers_trashold]
+#         train[target_column] = np.log1p(train[target_column])
+#         print('Perform log-transform of the target')
+    else:
+         print('Target_oultliers_trashold not set.')
+    
+    return train

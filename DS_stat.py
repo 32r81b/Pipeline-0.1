@@ -4,14 +4,13 @@ import scipy.stats as st
 
 from usfull_tools import numeric_types
 numeric_types = numeric_types()
+from set_vars import group_feature_detection_trashold
 
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set(style="whitegrid")
 
-def DS_stat(DS_nan, target_column = ''):
-    categorical_max_size = 20  # if less then determinate as categorical
-    
+def DS_stat(DS_nan, target_column = ''):    
     rows_nan, cols_nan = DS_nan.shape
     skew = DS_nan.skew()
     print('Shape:', rows_nan, ' * ', cols_nan)
@@ -34,7 +33,7 @@ def DS_stat(DS_nan, target_column = ''):
             if skew[column]>3: print('Scew:', np.round(skew[column], 2))
 
             
-            if DS[column].nunique() > categorical_max_size:
+            if DS[column].nunique() > group_feature_detection_trashold:
                 print('5% / 95% percentile:', np.round(np.percentile(DS[column], 5),2), ' / ', np.round(np.percentile(DS[column], 95),2))
             elif column != target_column:
                 group_feature.append(column)
@@ -51,7 +50,7 @@ def DS_stat(DS_nan, target_column = ''):
         
         if DS[column].dtypes == 'object':
             print('Unique values of:', DS[column].nunique(), ' (', np.round((DS[column].nunique()/DS[column].count())*100,2),'%)')
-            if DS[column].nunique() < categorical_max_size:
+            if DS[column].nunique() <= group_feature_detection_trashold:
                 print(DS[column].value_counts())
                 if column != target_column:
                     group_feature.append(column)

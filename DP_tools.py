@@ -16,7 +16,7 @@ def DS_skew(train, test, target_column):
 
     for row in skew.iteritems():
         new_name = 'log_' + row[0]
-        DS[new_name] = np.log(DS[row[0]]+1)
+        DS[new_name] = np.log1p(DS[row[0]])
     
     train = DS[DS[target_column].notnull()]
     test = DS[DS[target_column].isnull()]
@@ -101,10 +101,12 @@ def DS_dummies(train, test, target_column):
     rows, cells = DS.shape
     
     for column in DS.columns.drop(target_column):
-        if DS[column].dtype == object and DS[column].nunique() < 20:
+#         if DS[column].dtype == object and DS[column].nunique() < feature_generator_trashold:
+        if DS[column].dtype == object:
             dummies = pd.get_dummies(DS[column], prefix = str(column + '_dummie'))
             DS = pd.concat([DS, dummies], axis=1)
             print('Create dummies for', column, ':', len(dummies.columns))
+            DS = DS.drop(column, axis=1)
             
     train = DS[DS[target_column].notnull()]
     test = DS[DS[target_column].isnull()]

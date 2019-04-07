@@ -7,6 +7,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 import scipy as sp 
 import scipy.stats 
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import RobustScaler
 
 
 from set_vars import target_column, target_type
@@ -37,9 +39,9 @@ def fast_score(train, new_column_values= pd.Series([]), old_column=''):
     X_train, X_test, y_train, y_test = train_test_split(train, y, test_size=0.3, random_state=42)
     
     if target_type=='binary':
-        model = LogisticRegression(solver='liblinear')
+        model = make_pipeline(RobustScaler(), LogisticRegression(solver='liblinear'))
     elif target_type=='interval':
-        model = LinearRegression()
+        model = make_pipeline(RobustScaler(), LinearRegression())
     
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
